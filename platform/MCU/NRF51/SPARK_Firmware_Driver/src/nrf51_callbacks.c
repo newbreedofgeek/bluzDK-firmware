@@ -217,6 +217,35 @@ void on_ble_evt(ble_evt_t * p_ble_evt)
                     APP_ERROR_CHECK(err_code);
                 }
             }
+			else
+			{
+				// Verify if short or complete name matches Weight Scale.
+				char* target = "C&D_UC-352BLE_5F01AA";   // Or should this be "WGT SCALE"
+				if ((err_code == NRF_SUCCESS) &&
+					(0 == memcmp(target,type_data.p_data,type_data.data_len)) &&
+//                	isCloudConnected &&
+					!isCloudUpdating &&
+					system_millis() - lastConnectionTime > TIME_BETWEEN_CONNECTIONS)
+				{
+					err_code = sd_ble_gap_scan_stop();
+					state = BLE_OFF;
+					if (err_code != NRF_SUCCESS)
+					{
+					}
+
+					ble_gap_conn_params_t connection_param = get_gw_conn_params();   // Assuming that BluzDK conn params are OK for WGTSCALE
+					lastConnectionTime = system_millis();
+					err_code = sd_ble_gap_connect(&p_ble_evt->evt.gap_evt.params.adv_report.\
+                                              peer_addr,
+                                              &m_scan_param,
+                                              &connection_param);
+                
+					if (err_code != NRF_SUCCESS)
+					{
+						APP_ERROR_CHECK(err_code);
+					}
+				}
+			}
             break;
         }
             

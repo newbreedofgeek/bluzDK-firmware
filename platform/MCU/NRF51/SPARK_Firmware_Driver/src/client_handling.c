@@ -28,6 +28,8 @@
 #define BLE_SCS_UUID_SERVICE 0x0223
 #define BLE_SCS_UUID_DATA_DN_CHAR 0x0224
 #define BLE_SCS_UUID_DATA_UP_CHAR 0x0225
+#define BLE_WGT_UUID_SERVICE 0x181D
+#define BLE_WGT_UUID_DATA_UP_CHAR 0x2A9D
 
 #define RX_BUFFER_SIZE 					  512
 
@@ -267,6 +269,14 @@ static void db_discovery_evt_handler(ble_db_discovery_evt_t * p_evt)
 				p_client->up_char_index = i;
 				is_valid_srv_found   = true;
 			}
+            else if ((p_characteristic->characteristic.uuid.uuid == BLE_WGT_UUID_DATA_UP_CHAR) // WEIGHT READING
+				&&
+				(p_characteristic->characteristic.uuid.type == m_base_uuid_type))
+			{
+				// Characteristic found. Store the information needed and break.
+				p_client->up_char_index = i;
+				is_valid_srv_found   = true;
+			}
         }
     }
 
@@ -474,6 +484,15 @@ void client_handling_init(void (*b)(uint8_t *m_tx_buf, uint16_t size))
 
     err_code = ble_db_discovery_evt_register(&uuid,
                                              db_discovery_evt_handler);
+
+    APP_ERROR_CHECK(err_code);
+	
+	// Register with discovery module for the discovery of the WEIGHT READING service.
+	uuid.type = m_base_uuid_type;
+    uuid.uuid = BLE_WGT_UUID_SERVICE;
+
+    err_code = ble_db_discovery_evt_register(&uuid,
+			   db_discovery_evt_handler);
 
     APP_ERROR_CHECK(err_code);
 }
