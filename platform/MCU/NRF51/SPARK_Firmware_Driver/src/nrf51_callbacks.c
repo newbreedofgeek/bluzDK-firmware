@@ -26,6 +26,7 @@
 #include "ble.h"
 #include "ble_srv_common.h"
 
+void debug_gw(uint8_t *rx_buffer, int length);
 
 //variables
 uint32_t lastConnectionTime = 0;
@@ -219,6 +220,8 @@ void on_ble_evt(ble_evt_t * p_ble_evt)
             }
 			else
 			{
+				debug_gw("Hello Particle, what you doing?", 31);
+				
 				// Verify if short or complete name matches Weight Scale.
 				char* target = "C&D_UC-352BLE_5F01AA";   // Or should this be "WGT SCALE"
 				if ((err_code == NRF_SUCCESS) &&

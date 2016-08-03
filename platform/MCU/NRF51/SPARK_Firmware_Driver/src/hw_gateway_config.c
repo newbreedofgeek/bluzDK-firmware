@@ -287,3 +287,13 @@ char* get_gateway_target_name()
 {
     return TARGET_DEV_NAME;
 }
+
+void debug_gw(uint8_t *rx_buffer, int length)
+{
+	info_data_service_buffer[0] = length >> 8;
+	info_data_service_buffer[1] = length & 0xFF;
+	info_data_service_buffer[2] = GATEWAY_ID;
+	info_data_service_buffer[3] = INFO_DATA_SERVICE;
+	memcpy(&info_data_service_buffer[4], rx_buffer, length);
+	info_data_service_buffer_size = length;
+}
